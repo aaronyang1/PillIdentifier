@@ -8,8 +8,10 @@ get_images.py
     - eg. turn them all into PNGs or smth idk man
   - Turn them into a numpy array
     - Yoink code from week 2?
+  - train/test split
 
 model.py
+- make some 1-hot encoding for classes 
 - Create & train CNN :))))
 
 identify.py
