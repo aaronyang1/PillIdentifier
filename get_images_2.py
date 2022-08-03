@@ -4,6 +4,8 @@ import numpy as np
 import cv2
 import glob
 
+# Images from that weird dataset/pretrained model
+
 imgs = []
 def get_images():
     path = "/Users/aaronyang/Desktop/Pill Classification.v2-augmented-classification-v1.folder/train/pill"
