@@ -11,7 +11,7 @@ def get_images():
     path = "/Users/aaronyang/Desktop/Pill Classification.v2-augmented-classification-v1.folder/train/pill"
     for f in os.listdir(path):
         imgs.append(np.array(Image.open(os.path.join(path,f))))
-    imgs = np.array(imgs)
+    imgs = np.random.shuffle(np.array(imgs))
 
 def save_images():
     with open('imgs.npy', 'wb') as f:

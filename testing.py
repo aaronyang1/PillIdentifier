@@ -1,8 +1,7 @@
-import get_images as gi
+import database as db
 from matplotlib import pyplot as plt
 
 
-imgs = gi.load_images()
-for i in range(20, 500, 100):
-    plt.imshow(imgs[i, 0], interpolation='nearest')
-    plt.show()
+db.load_images()
+labels = db.imgs[:5, 1]
+print(db.get_one_hot(labels))

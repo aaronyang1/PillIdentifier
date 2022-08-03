@@ -1,3 +1,4 @@
+from tokenize import String
 import xlrd
 from collections import Counter
 import urllib.request
@@ -8,10 +9,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-# Give the location of the file
+
 imgs = []
 def get_images():
+    '''
+    Uses an excel spreadsheet with website path names and labels to retreive images/labels
+    Stores as a global numpy array
+    No parameters or returns
+    '''
     global imgs
+    # Give the location of the file
     loc = ("/Users/aaronyang/Desktop/better_pills.xls")
 
     wb = xlrd.open_workbook(loc)
@@ -25,25 +32,61 @@ def get_images():
         url = "https://data.lhncbc.nlm.nih.gov/public/Pills/" + sheet.row_values(i)[2]
         urllib.request.urlretrieve(url, str(i))
         img = Image.open(str(i))
-        x_crop_len = min(img.size[0] // 8, img.size[1] // 6) * 4
-        y_crop_len = min(img.size[0] // 8, img.size[1] // 6) * 3
+        x_crop_len = min(img.size[0] // 2, img.size[1] // 2) 
+        y_crop_len = min(img.size[0] // 2, img.size[1] // 2)
         l = (img.size[0] - x_crop_len) // 2
         r = l + x_crop_len
         t = (img.size[1] - y_crop_len) // 2
         b = t + y_crop_len
         img = img.crop((l, t, r, b))
-        img = img.resize((200, 150))
+        img = img.resize((256, 256))
         imgs.append(np.array([np.array(img), sheet.row_values(i)[4]]))
         os.remove(str(i))
-    imgs = np.array(imgs)
+    imgs = np.random.shuffle(np.array(imgs))
+
 def save_images():
+    '''
+    Saves global imgs array (containing image and label data) locally
+    No parameters or returns
+    '''
     global imgs
     with open('imgs.npy', 'wb') as f:
         np.save(f, imgs)
+
 def load_images():
+    '''
+    Loads saved imgs array and stores it globally
+    No parameters or returns
+    '''
     global imgs
     with open('imgs.npy', 'rb') as f:
-        imgs = np.load(f)
+        imgs = np.load(f, allow_pickle = True)
+
+def get_one_hot(names):
+    '''
+    Takes in drug name and outputs corresponding 1 hot encoding for that drug
+    Parameters
+    ----------
+    names: String
+        Name of the drug
+    Returns
+    --------
+    np.ndarray, size (5,)
+        Returns a size (5,) one hot encoding
+    '''
+    labels = []
+    for name in names:
+        if (name == "AMARYL 4MG TABLETS"):
+            labels.append(np.array([1, 0, 0, 0, 0]))
+        elif (name == "DEPAKOTE SPRINKLES 125 MG"):
+            labels.append(np.array([0, 1, 0, 0, 0]))
+        elif (name == "ALLOPURINOL 300MG TABS"):
+            labels.append(np.array([0, 0, 1, 0, 0]))
+        elif (name == "BETHANECHOL TAB 10MG"):
+            labels.append(np.array([0, 0, 0, 1, 0]))
+        elif (name == "AMRIX CAP 30MG" or name == "amrix"):
+            labels.append(np.array([0, 0, 0, 0, 1]))
+    return np.array(labels)
 '''
 for i in range(5):
     url = "https://data.lhncbc.nlm.nih.gov/public/Pills/" + sheet.row_values(i)[2]
